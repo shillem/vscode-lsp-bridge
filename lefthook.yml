@@ -1,0 +1,6 @@
+pre-commit:
+  commands:
+    prettier:
+      run: bunx prettier --write {staged_files}
+      glob: "*.{css,html,js,json,md,scss,ts,xml,yaml,yml}"
+      stage_fixed: true

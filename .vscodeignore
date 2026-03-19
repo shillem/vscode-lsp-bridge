@@ -1,0 +1,12 @@
+.claude/**
+.github/**
+.vscode/**
+node_modules/**
+openspec/**
+src/**
+temp/**
+test/**
+.gitignore
+bun.lock
+lefthook.yml
+tsconfig.json

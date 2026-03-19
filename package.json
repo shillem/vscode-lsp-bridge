@@ -1,0 +1,82 @@
+{
+  "name": "vscode-lsp-bridge",
+  "displayName": "LSP Bridge",
+  "description": "Bridges VS Code languages features to external tools via an LSP-compliant server",
+  "version": "0.1.1",
+  "publisher": "shillem",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shillem/vscode-lsp-bridge"
+  },
+  "icon": "images/icon.png",
+  "categories": [
+    "Programming Languages",
+    "Other"
+  ],
+  "keywords": [
+    "lsp",
+    "claude",
+    "bridge",
+    "language-server",
+    "code-intelligence"
+  ],
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "LSP Bridge",
+      "properties": {
+        "lspBridge.autoStart": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically start the bridge server on activation"
+        },
+        "lspBridge.languages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Language IDs to expose through the bridge. Use the 'LSP Bridge: Select Languages' command to configure."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "lspBridge.start",
+        "title": "LSP Bridge: Start Server"
+      },
+      {
+        "command": "lspBridge.stop",
+        "title": "LSP Bridge: Stop Server"
+      },
+      {
+        "command": "lspBridge.selectLanguages",
+        "title": "LSP Bridge: Select Languages"
+      },
+      {
+        "command": "lspBridge.generateClaudePlugin",
+        "title": "LSP Bridge: Generate Local Claude Plugin"
+      }
+    ]
+  },
+  "scripts": {
+    "bundle": "esbuild src/proxy.ts --bundle --platform=node --format=cjs --outfile=out/bundle/proxy.cjs",
+    "compile": "tsc -p ./ && bun run bundle",
+    "test": "bun test",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "bun-types": "^1.3.11",
+    "esbuild": "^0.27.4",
+    "typescript": "^5.3.3"
+  }
+}

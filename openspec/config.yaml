@@ -1,0 +1,5 @@
+schema: spec-driven
+
+context: |
+  Tech stack: TypeScript, VS Code Extension API, Node.js, esbuild
+  Domain: VS Code extension that bridges host language features to external tools via an LSP-compliant server over Unix domain sockets
