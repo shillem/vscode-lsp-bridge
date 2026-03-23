@@ -14,7 +14,7 @@ export function activate(context: vscode.ExtensionContext) {
   extensionVersion = context.extension.packageJSON.version;
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("lspBridge.start", startServer),
+    vscode.commands.registerCommand("lspBridge.start", () => startServer()),
     vscode.commands.registerCommand("lspBridge.stop", stopServer),
     vscode.commands.registerCommand(
       "lspBridge.selectLanguages",
@@ -29,12 +29,26 @@ export function activate(context: vscode.ExtensionContext) {
       if (e.affectsConfiguration("lspBridge.languages")) {
         regenerateIfRunning();
       }
+    }),
+    vscode.workspace.onDidChangeWorkspaceFolders(() => {
+      if (!vscode.workspace.getConfiguration("lspBridge").get<boolean>("autoStart")) {
+        return;
+      }
+
+      if (server?.isRunning()) {
+        server.stop();
+        server = null;
+      }
+
+      if (vscode.workspace.workspaceFolders?.[0]) {
+        startServer(true);
+      }
     })
   );
 
   const config = vscode.workspace.getConfiguration("lspBridge");
   if (config.get<boolean>("autoStart")) {
-    startServer();
+    startServer(true);
   }
 }
 
@@ -141,23 +155,27 @@ function regenerateIfRunning() {
   }
 }
 
-async function startServer() {
+async function startServer(silent = false) {
   const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
 
   if (!workspaceFolder) {
-    vscode.window.showWarningMessage(`${MSG_PREFIX} no workspace folder open`);
+    if (!silent) {
+      vscode.window.showWarningMessage(`${MSG_PREFIX} no workspace folder open`);
+    }
     return;
   }
 
   const languages = getSelectedLanguages();
 
   if (languages.length === 0) {
-    const action = await vscode.window.showWarningMessage(
-      `${MSG_PREFIX} no languages configured.`,
-      "Select Languages"
-    );
-    if (action === "Select Languages") {
-      await vscode.commands.executeCommand("lspBridge.selectLanguages");
+    if (!silent) {
+      const action = await vscode.window.showWarningMessage(
+        `${MSG_PREFIX} no languages configured.`,
+        "Select Languages"
+      );
+      if (action === "Select Languages") {
+        await vscode.commands.executeCommand("lspBridge.selectLanguages");
+      }
     }
     return;
   }
@@ -171,7 +189,7 @@ async function startServer() {
 
   try {
     await server.start(workspaceFolder.uri.fsPath);
-    vscode.window.showInformationMessage(`${MSG_PREFIX} server started`);
+    vscode.window.setStatusBarMessage(`${MSG_PREFIX} server started`, 3000);
   } catch (err: any) {
     vscode.window.showErrorMessage(
       `${MSG_PREFIX} server failed to start with error '${err.message}'`
@@ -188,5 +206,5 @@ function stopServer() {
 
   server.stop();
   server = null;
-  vscode.window.showInformationMessage(`${MSG_PREFIX} server stopped`);
+  vscode.window.setStatusBarMessage(`${MSG_PREFIX} server stopped`, 3000);
 }
