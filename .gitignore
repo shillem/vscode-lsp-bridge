@@ -4,3 +4,4 @@ node_modules/
 openspec/changes/archive/
 out/
 temp/
+test/fixtures/workspace/
