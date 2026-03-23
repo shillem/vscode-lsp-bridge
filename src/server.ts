@@ -11,6 +11,14 @@ export class BridgeServer {
 
   constructor(private serverInfo: ServerInfo) {}
 
+  getSocketPath(): string | null {
+    return this._socketPath;
+  }
+
+  isRunning(): boolean {
+    return this.udsServer !== null;
+  }
+
   async start(workspaceFolderPath: string): Promise<string> {
     if (this.isRunning()) {
       throw new Error("Server already running");
@@ -52,13 +60,5 @@ export class BridgeServer {
       }
     }
     this._socketPath = null;
-  }
-
-  isRunning(): boolean {
-    return this.udsServer !== null;
-  }
-
-  getSocketPath(): string | null {
-    return this._socketPath;
   }
 }
