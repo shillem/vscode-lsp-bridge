@@ -2,7 +2,7 @@
   "name": "vscode-lsp-bridge",
   "displayName": "LSP Bridge",
   "description": "Bridges VS Code languages features to external tools via an LSP-compliant server",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "publisher": "shillem",
   "license": "MIT",
   "repository": {

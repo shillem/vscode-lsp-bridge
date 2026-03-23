@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2] - 2026-03-23
+
+### Improvements
+
+- Use status bar for routine lifecycle notifications instead of pop-ups
+- Restart server automatically on workspace change
+
 ## [0.1.1] - 2026-03-20
 
 Initial release.
