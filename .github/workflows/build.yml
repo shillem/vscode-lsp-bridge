@@ -1,8 +1,7 @@
-name: CI
+name: Build
 
 on:
   pull_request:
-    branches: ["*"]
 
 jobs:
   build:
@@ -13,5 +12,7 @@ jobs:
       - uses: oven-sh/setup-bun@v2
 
       - run: bun install --frozen-lockfile
+
+      - run: bun run prettier:verify
 
       - run: bun run compile
