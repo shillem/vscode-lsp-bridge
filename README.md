@@ -1,16 +1,24 @@
 # LSP Bridge for VS Code
 
-> **Experimental** — this extension is under active development and may change significantly.
-
 A VS Code extension that gives [Claude Code](https://docs.anthropic.com/en/docs/claude-code) access to VS Code's language intelligence over a local LSP bridge.
 
 ## Why
 
 Claude Code runs in the terminal and has no direct access to VS Code's language server features. This extension bridges that gap by exposing VS Code's language server providers through a Unix domain socket. When the bridge is running, Claude Code can query the same type information, diagnostics, and navigation data that you see in the editor.
 
-Other approaches — such as MCP servers that wrap LSP — suffer from significant token overhead. Every MCP tool definition is injected into the system prompt, and each tool-call response is serialized into the conversation history where it is re-processed on every subsequent turn. An MCP LSP server exposing even a handful of operations adds a significant amount of tokens overhead.
+There are other ways to give Claude Code language intelligence, but each comes with trade-offs:
 
-This extension avoids that cost entirely. It integrates as a native LSP server plugin, so Claude Code handles language-server operations through its built-in LSP support rather than through MCP tool calls. Diagnostics flow automatically after every file edit without an explicit tool invocation, and active queries like hover or go-to-definition use Claude Code's internal LSP handling with no per-server schema overhead. The result is the most straightforward and token-efficient way to give Claude Code access to VS Code's language intelligence.
+### MCP servers that wrap LSP
+
+Every MCP tool definition is injected into the system prompt, and each tool-call response is serialized into the conversation history where it is re-processed on every subsequent turn. An MCP LSP server exposing even a handful of operations adds a significant amount of token overhead.
+
+### Dedicated LSP plugins that spawn their own servers
+
+Claude Code supports LSP plugins that launch standalone language servers. This works, but it means running a second language server for the same project that VS Code is already serving. Language servers are heavyweight processes — TypeScript's tsserver alone can consume hundreds of megabytes — so duplicating them wastes memory and CPU on redundant indexing of the same project graph.
+
+### This extension
+
+This extension avoids both problems. It integrates as a native LSP server plugin, so Claude Code handles language-server operations through its built-in LSP support rather than through MCP tool calls. Diagnostics flow automatically after every file edit without an explicit tool invocation, and active queries like hover or go-to-definition use Claude Code's internal LSP handling with no per-server schema overhead. Because the extension proxies requests to the language servers VS Code already has running, there are no duplicate processes or redundant indexing. For developers already working in VS Code alongside Claude Code, this is the most resource-efficient and token-efficient approach.
 
 ## Supported Language Features
 
@@ -41,13 +49,11 @@ This extension avoids that cost entirely. It integrates as a native LSP server p
 
 ### Loading the Plugin
 
-The **Generate Local Claude Plugin** command (step 3) creates a plugin directory at `.claude/plugins/vscode-lsp-bridge/` inside your workspace. This is not a marketplace plugin, so Claude Code does not discover it automatically — you need to load it explicitly:
+The **Generate Local Claude Plugin** command (step 3) creates a plugin directory at `.claude/plugins/vscode-lsp-bridge/` inside your workspace. To load the plugin, you must invoke claude using the `--plugin-dir` option:
 
 ```sh
 claude --plugin-dir .claude/plugins/vscode-lsp-bridge
 ```
-
-To avoid typing this every time, you can add it as a shell alias or use a project-level script.
 
 ### Commands
 
