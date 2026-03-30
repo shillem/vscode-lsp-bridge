@@ -70,7 +70,6 @@
     "bundle": "esbuild src/proxy.ts --bundle --platform=node --format=cjs --outfile=out/bundle/proxy.cjs",
     "compile": "tsc -p ./ && bun run bundle",
     "prettier:verify": "prettier --list-different \"{,src/**/}*.{css,html,js,json,md,scss,ts,xml,yaml,yml}\"",
-    "test": "bun test",
     "watch": "tsc -watch -p ./"
   },
   "devDependencies": {
