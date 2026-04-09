@@ -38,7 +38,7 @@ This extension avoids both problems. It integrates as a native LSP server plugin
 ## Requirements
 
 - VS Code 1.85.0 or later
-- macOS or Linux (Windows is not currently supported but could be added if requested)
+- macOS or Linux
 
 ## Usage
 
